@@ -1,0 +1,230 @@
+.kanban-container {
+  flex: 1;
+  padding: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--bg-secondary);
+}
+
+.kanban-board {
+  display: flex;
+  gap: 12px;
+  min-height: calc(100vh - 180px);
+  padding-bottom: 16px;
+}
+
+.column {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  max-height: calc(100vh - 200px);
+}
+
+.column-header {
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-primary);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.column-header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.column-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--bg-secondary);
+}
+
+.column-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.task-count {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-count-total {
+  color: var(--text-tertiary);
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+/* Column Filters */
+.column-filters {
+  padding: 8px 12px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 6px;
+}
+
+.column-search-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 8px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.column-search {
+  flex: 1;
+  padding: 6px 10px 6px 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.column-search:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-primary);
+}
+
+.column-search::placeholder {
+  color: var(--text-tertiary);
+}
+
+.column-type-filter {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  max-width: 110px;
+}
+
+.column-type-filter:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-primary);
+}
+
+.column-type-filter:hover {
+  border-color: var(--border-dark);
+}
+
+.tasks-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  min-height: 200px;
+}
+
+.tasks-container.drag-over {
+  background: rgba(99, 102, 241, 0.05);
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius-lg);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+}
+
+.empty-state-icon {
+  margin-bottom: 16px;
+  opacity: 0.3;
+  color: var(--text-tertiary);
+}
+
+.empty-state-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Scrollbar para las columnas */
+.tasks-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tasks-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tasks-container::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 3px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+@media (max-width: 1024px) {
+  .kanban-container {
+    padding: 20px;
+  }
+
+  .column {
+    flex: 0 0 300px;
+  }
+  
+  .column-filters {
+    flex-direction: column;
+  }
+  
+  .column-type-filter {
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .kanban-container {
+    padding: 16px;
+  }
+
+  .kanban-board {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .column {
+    flex: 1;
+    width: 100%;
+    max-height: none;
+  }
+
+  .tasks-container {
+    max-height: 400px;
+  }
+}

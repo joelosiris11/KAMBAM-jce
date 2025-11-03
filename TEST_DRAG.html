@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Drag Drop Simple</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .column {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 250px;
+            min-height: 400px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .column h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .task {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            cursor: grab;
+            border: 2px solid #e0e0e0;
+            user-select: none;
+        }
+        .task:active {
+            cursor: grabbing;
+        }
+        .task.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+        }
+        .column.drag-over {
+            background: #e3f2fd;
+            border: 2px dashed #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Drag & Drop NATIVO (Sin React)</h1>
+    <p>Si esto funciona, el problema es con React Beautiful DnD</p>
+    
+    <div class="container">
+        <div class="column" id="column1">
+            <h2>Columna 1</h2>
+            <div class="task" draggable="true" data-id="1">Tarea 1 - Arrástrame</div>
+            <div class="task" draggable="true" data-id="2">Tarea 2 - Arrástrame</div>
+        </div>
+        
+        <div class="column" id="column2">
+            <h2>Columna 2</h2>
+            <div class="task" draggable="true" data-id="3">Tarea 3 - Arrástrame</div>
+        </div>
+        
+        <div class="column" id="column3">
+            <h2>Columna 3</h2>
+        </div>
+    </div>
+
+    <script>
+        let draggedElement = null;
+
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('task')) {
+                draggedElement = e.target;
+                e.target.classList.add('dragging');
+                console.log('🎯 Drag Start:', e.target.dataset.id);
+            }
+        });
+
+        document.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('task')) {
+                e.target.classList.remove('dragging');
+                console.log('✅ Drag End');
+            }
+        });
+
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const column = e.target.closest('.column');
+            if (column) {
+                column.classList.add('drag-over');
+            }
+        });
+
+        document.addEventListener('dragleave', (e) => {
+            const column = e.target.closest('.column');
+            if (column && !column.contains(e.relatedTarget)) {
+                column.classList.remove('drag-over');
+            }
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const column = e.target.closest('.column');
+            
+            if (column) {
+                column.classList.remove('drag-over');
+                if (draggedElement) {
+                    column.appendChild(draggedElement);
+                    console.log('📦 Dropped in:', column.id);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
