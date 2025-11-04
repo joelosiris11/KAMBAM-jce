@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useKanban } from '../context/KanbanContext';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import './Modal.css';
 import './ColumnManager.css';
 
@@ -50,6 +51,25 @@ const ColumnManager = ({ onClose }) => {
     updateColumn(columnId, { color });
   };
 
+  const handleMoveColumn = (columnId, direction) => {
+    const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+    const currentIndex = sortedColumns.findIndex(col => col.id === columnId);
+    
+    if (direction === 'up' && currentIndex > 0) {
+      // Intercambiar posición con la columna anterior
+      const targetColumn = sortedColumns[currentIndex - 1];
+      updateColumn(columnId, { order: targetColumn.order });
+      updateColumn(targetColumn.id, { order: sortedColumns[currentIndex].order });
+    } else if (direction === 'down' && currentIndex < sortedColumns.length - 1) {
+      // Intercambiar posición con la columna siguiente
+      const targetColumn = sortedColumns[currentIndex + 1];
+      updateColumn(columnId, { order: targetColumn.order });
+      updateColumn(targetColumn.id, { order: sortedColumns[currentIndex].order });
+    }
+  };
+
+  const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -62,8 +82,26 @@ const ColumnManager = ({ onClose }) => {
 
         <div className="modal-body">
           <div className="columns-list">
-            {columns.sort((a, b) => a.order - b.order).map((column) => (
+            {sortedColumns.map((column, index) => (
               <div key={column.id} className="column-item">
+                <div className="column-reorder-buttons">
+                  <button
+                    className="btn-icon btn-reorder"
+                    onClick={() => handleMoveColumn(column.id, 'up')}
+                    disabled={index === 0}
+                    title="Mover arriba"
+                  >
+                    <ChevronUp size={18} />
+                  </button>
+                  <button
+                    className="btn-icon btn-reorder"
+                    onClick={() => handleMoveColumn(column.id, 'down')}
+                    disabled={index === sortedColumns.length - 1}
+                    title="Mover abajo"
+                  >
+                    <ChevronDown size={18} />
+                  </button>
+                </div>
                 <div className="column-item-info">
                   <div 
                     className="column-color-preview" 

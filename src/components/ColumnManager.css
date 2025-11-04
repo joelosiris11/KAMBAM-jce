@@ -9,6 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 16px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -19,6 +20,39 @@
 .column-item:hover {
   border-color: var(--border-dark);
   box-shadow: var(--shadow-sm);
+}
+
+.column-reorder-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.btn-reorder {
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+}
+
+.btn-reorder:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.btn-reorder:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .column-item-info {
