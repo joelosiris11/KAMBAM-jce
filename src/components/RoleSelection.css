@@ -39,6 +39,46 @@
   font-weight: 600;
 }
 
+.loading-roles {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* Category Filter */
+.category-filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 0 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.category-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.category-btn:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+}
+
+.category-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
 .roles-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

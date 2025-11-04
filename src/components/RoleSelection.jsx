@@ -1,35 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { PUBLIC_ROLES, getRolesByCategory } from '../utils/roles';
+import { firebaseRoles, isRolesServiceAvailable } from '../services/rolesService';
 import './RoleSelection.css';
 
 const RoleSelection = ({ username, onSelectRole }) => {
   const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [roles, setRoles] = useState(PUBLIC_ROLES);
+  const [loading, setLoading] = useState(true);
 
-  const roles = [
-    {
-      id: 'admin',
-      name: 'Administrador',
-      icon: '👑',
-      description: 'Control total del sistema y gestión de usuarios'
-    },
-    {
-      id: 'project-manager',
-      name: 'Project Manager',
-      icon: '📊',
-      description: 'Gestión completa de proyectos y tareas'
-    },
-    {
-      id: 'developer',
-      name: 'Desarrollador',
-      icon: '💻',
-      description: 'Gestión de tareas de desarrollo'
-    },
-    {
-      id: 'designer',
-      name: 'Diseñador',
-      icon: '🎨',
-      description: 'Gestión de tareas de diseño'
+  useEffect(() => {
+    loadRoles();
+  }, []);
+
+  const loadRoles = async () => {
+    setLoading(true);
+    try {
+      if (isRolesServiceAvailable()) {
+        // Cargar roles desde Firebase
+        const firebaseRolesData = await firebaseRoles.getPublic();
+        if (firebaseRolesData.length > 0) {
+          setRoles(firebaseRolesData);
+        } else {
+          // Si no hay roles en Firebase, usar locales
+          setRoles(PUBLIC_ROLES);
+        }
+      } else {
+        // Fallback a roles locales
+        setRoles(PUBLIC_ROLES);
+      }
+    } catch (error) {
+      console.error('Error al cargar roles:', error);
+      // En caso de error, usar roles locales
+      setRoles(PUBLIC_ROLES);
     }
-  ];
+    setLoading(false);
+  };
+
+  // Obtener categorías dinámicamente de los roles cargados
+  const categories = [...new Set(roles.map(role => role.category))].sort();
+
+  // Filtrar roles por categoría
+  const filteredRoles = selectedCategory === 'all' 
+    ? roles 
+    : roles.filter(role => role.category === selectedCategory);
 
   const handleConfirm = () => {
     if (selectedRole) {
@@ -48,8 +62,31 @@ const RoleSelection = ({ username, onSelectRole }) => {
           </p>
         </div>
 
+        {loading ? (
+          <div className="loading-roles">Cargando roles...</div>
+        ) : (
+          <>
+            {/* Filtro de categorías */}
+            <div className="category-filter">
+          <button
+            className={`category-btn ${selectedCategory === 'all' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('all')}
+          >
+            Todos
+          </button>
+          {categories.map(category => (
+            <button
+              key={category}
+              className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
         <div className="roles-grid">
-          {roles.map((role) => (
+          {filteredRoles.map((role) => (
             <div
               key={role.id}
               className={`role-card ${selectedRole === role.id ? 'selected' : ''}`}
@@ -71,6 +108,8 @@ const RoleSelection = ({ username, onSelectRole }) => {
             Continuar
           </button>
         </div>
+          </>
+        )}
       </div>
     </div>
   );

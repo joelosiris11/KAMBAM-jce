@@ -131,7 +131,6 @@ body {
 }
 
 .sidebar-nav {
-  flex: 1;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -169,9 +168,37 @@ body {
   font-size: 20px;
 }
 
+/* Burndown Chart en Sidebar */
+.sidebar-chart {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar-chart::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-chart::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-chart::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.sidebar-chart::-webkit-scrollbar-thumb:hover {
+  background: var(--border-dark);
+}
+
 .sidebar-footer {
   padding: 16px;
   border-top: 1px solid var(--border);
+  margin-top: auto;
 }
 
 .sidebar-user {

@@ -64,9 +64,20 @@ const TaskCard = ({ task, index, onClick, onDelete }) => {
             <div className="task-badges">
               {task.type && (() => {
                 const TypeIcon = getTypeIcon(task.type);
+                const typeLabels = {
+                  'general': 'General',
+                  'programacion': 'Código',
+                  'investigacion': 'Investigación',
+                  'diseno': 'Diseño',
+                  'testing': 'Testing',
+                  'documentacion': 'Docs',
+                  'reunion': 'Reunión',
+                  'bug': 'Bug'
+                };
                 return (
-                  <span className="task-type-badge">
-                    <TypeIcon size={14} />
+                  <span className="task-type-badge" title={typeLabels[task.type]}>
+                    <TypeIcon size={13} />
+                    <span className="task-type-text">{typeLabels[task.type]}</span>
                   </span>
                 );
               })()}
@@ -116,16 +127,6 @@ const TaskCard = ({ task, index, onClick, onDelete }) => {
                   <span>{commentCount}</span>
                 </div>
               )}
-            </div>
-
-            <div className="task-card-actions">
-              <button
-                className="task-card-action-btn"
-                onClick={handleDelete}
-                title="Eliminar tarea"
-              >
-                <X size={16} />
-              </button>
             </div>
           </div>
         </div>

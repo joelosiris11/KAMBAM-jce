@@ -66,9 +66,41 @@ const TaskDetailModal = ({ task: initialTask, onClose }) => {
         <div className="modal-body">
           <div className="task-detail-header">
             <h3 className="task-detail-title">{task.title}</h3>
-            <span className={`task-priority-badge ${task.priority}`}>
-              {getPriorityText(task.priority)}
-            </span>
+            <div className="task-detail-badges">
+              {task.type && (() => {
+                const typeLabels = {
+                  'general': 'General',
+                  'programacion': 'Programación',
+                  'investigacion': 'Investigación',
+                  'diseno': 'Diseño',
+                  'testing': 'Testing',
+                  'documentacion': 'Documentación',
+                  'reunion': 'Reunión',
+                  'bug': 'Bug'
+                };
+                const typeColors = {
+                  'general': '#6b7280',
+                  'programacion': '#10b981',
+                  'investigacion': '#3b82f6',
+                  'diseno': '#f59e0b',
+                  'testing': '#ec4899',
+                  'documentacion': '#8b5cf6',
+                  'reunion': '#06b6d4',
+                  'bug': '#ef4444'
+                };
+                return (
+                  <span 
+                    className="task-type-badge-detail" 
+                    style={{ backgroundColor: typeColors[task.type] }}
+                  >
+                    {typeLabels[task.type]}
+                  </span>
+                );
+              })()}
+              <span className={`task-priority-badge ${task.priority}`}>
+                {getPriorityText(task.priority)}
+              </span>
+            </div>
           </div>
 
           {task.description && (

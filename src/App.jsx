@@ -8,6 +8,7 @@ import KanbanBoard from './components/KanbanBoard';
 import TaskModal from './components/TaskModal';
 import ColumnManager from './components/ColumnManager';
 import SettingsPanel from './components/SettingsPanel';
+import BurndownChart from './components/BurndownChart';
 import { LayoutDashboard, Columns, Settings, LogOut, Plus } from 'lucide-react';
 import './App.css';
 
@@ -19,8 +20,8 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  const handleLogin = (username, pin) => {
-    const result = login(username, pin);
+  const handleLogin = async (username, pin) => {
+    const result = await login(username, pin);
     
     if (result.success) {
       setLoginError('');
@@ -29,8 +30,8 @@ function App() {
     }
   };
 
-  const handleRoleSelection = (role) => {
-    updateUserRole(role);
+  const handleRoleSelection = async (role) => {
+    await updateUserRole(role);
   };
 
   // Mostrar pantalla de login
@@ -82,14 +83,21 @@ function App() {
             <Columns size={20} />
             <span>Columnas</span>
           </button>
-          <button 
-            className="sidebar-nav-item" 
-            onClick={() => setShowSettings(true)}
-          >
-            <Settings size={20} />
-            <span>Configuración</span>
-          </button>
+          {currentUser?.role === 'admin' && (
+            <button 
+              className="sidebar-nav-item" 
+              onClick={() => setShowSettings(true)}
+            >
+              <Settings size={20} />
+              <span>Configuración</span>
+            </button>
+          )}
         </nav>
+
+        {/* Burndown Chart */}
+        <div className="sidebar-chart">
+          <BurndownChart />
+        </div>
 
         <div className="sidebar-footer">
           <div className="sidebar-user">

@@ -1,0 +1,252 @@
+.burndown-chart {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  border: 1px solid var(--border);
+}
+
+.burndown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.burndown-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.burndown-settings-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.burndown-settings-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+.burndown-settings {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.setting-group input[type="date"] {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.setting-group input[type="date"]:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.burndown-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.stat-item {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 9px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.stat-value {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-value.completed {
+  color: var(--success);
+}
+
+.stat-value.remaining {
+  color: var(--warning);
+}
+
+.sprint-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.status-indicator {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+}
+
+.status-indicator.ahead {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-indicator.on-track {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-indicator.behind {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-detail {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.sprint-ended {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.burndown-graph {
+  margin-bottom: 10px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 8px 4px;
+}
+
+.burndown-tooltip {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  backdrop-filter: blur(4px);
+}
+
+.tooltip-date {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: white;
+}
+
+.burndown-tooltip p {
+  font-size: 11px;
+  margin: 2px 0;
+}
+
+.burndown-progress {
+  margin-top: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-secondary);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.progress-label {
+  font-size: 9px;
+  color: var(--text-secondary);
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .burndown-chart {
+    padding: 12px;
+  }
+
+  .burndown-stats {
+    gap: 6px;
+  }
+
+  .stat-value {
+    font-size: 16px;
+  }
+
+  .burndown-graph {
+    padding: 8px 4px;
+  }
+
+  .sprint-status {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .burndown-tooltip {
+    background: rgba(31, 41, 55, 0.95);
+    border-color: rgba(75, 85, 99, 0.5);
+  }
+}
+

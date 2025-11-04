@@ -1,0 +1,179 @@
+.roles-manager-modal {
+  max-width: 800px;
+  max-height: 90vh;
+}
+
+.roles-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+
+/* Roles List Manager */
+.roles-list-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.role-manager-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.role-manager-item:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.role-manager-item.inactive {
+  opacity: 0.6;
+  background: var(--bg-tertiary);
+}
+
+.role-manager-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.role-manager-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.role-manager-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inactive-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  background: var(--danger);
+  color: white;
+  border-radius: 8px;
+}
+
+.role-manager-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.role-category {
+  padding: 2px 8px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.role-id {
+  font-family: monospace;
+  color: var(--text-tertiary);
+}
+
+.role-manager-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon.success:hover {
+  border-color: var(--success);
+  background: var(--success);
+}
+
+/* Edit Role Modal */
+.edit-role-modal {
+  max-width: 500px;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.form-input.color-input {
+  height: 50px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.form-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.form-checkbox span {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+@media (max-width: 768px) {
+  .roles-manager-modal {
+    max-width: 95vw;
+  }
+
+  .role-manager-item {
+    flex-wrap: wrap;
+  }
+
+  .role-manager-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .roles-actions {
+    flex-direction: column;
+  }
+
+  .roles-actions button {
+    width: 100%;
+  }
+}
+

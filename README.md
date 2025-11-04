@@ -16,6 +16,7 @@
 - [Demo](#demo)
 - [Tecnologías](#tecnologías)
 - [Instalación](#instalación)
+- [Configuración de Firebase](#configuración-de-firebase)
 - [Uso](#uso)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Funcionalidades Detalladas](#funcionalidades-detalladas)
@@ -81,8 +82,9 @@
 - **CSS Modules** - Estilos encapsulados
 
 ### Almacenamiento
-- **LocalStorage** - Persistencia de datos (actual)
-- **PostgreSQL** - Base de datos (migración futura)
+- **Firebase Firestore** - Base de datos en tiempo real ✨ **NUEVO**
+- **LocalStorage** - Fallback automático si Firebase no está configurado
+- **PostgreSQL** - Alternativa para backend personalizado (migración futura)
 
 ### Desarrollo
 - **ESLint** - Linting
@@ -109,12 +111,18 @@ cd kanban-jce
 npm install
 ```
 
-3. **Iniciar el servidor de desarrollo**
+3. **(Opcional) Configurar Firebase** 🔥
+```bash
+# Ver guía completa en FIREBASE_SETUP.md
+# O continuar sin Firebase (usa localStorage automáticamente)
+```
+
+4. **Iniciar el servidor de desarrollo**
 ```bash
 npm run dev
 ```
 
-4. **Abrir en el navegador**
+5. **Abrir en el navegador**
 ```
 http://localhost:5173
 ```
@@ -129,9 +137,86 @@ npm run dev          # Inicia el servidor de desarrollo
 npm run build        # Genera build de producción
 npm run preview      # Preview del build de producción
 
+# Firebase
+npm run firebase:init # Inicializa Firebase con datos por defecto
+
 # Calidad de código
 npm run lint         # Ejecuta ESLint
 ```
+
+---
+
+## Configuración de Firebase
+
+### 🔥 ¿Por qué Firebase?
+
+Firebase Firestore te da:
+- ✅ **Sincronización en tiempo real** - Los cambios aparecen instantáneamente en todos los dispositivos
+- ✅ **Colaboración multi-usuario** - Múltiples usuarios trabajando simultáneamente
+- ✅ **Backups automáticos** - Tus datos están seguros en la nube
+- ✅ **Escalabilidad** - Soporta millones de tareas
+- ✅ **Gratis para empezar** - Plan gratuito generoso
+
+### ⚡ Quick Start (5 minutos)
+
+1. **Crear proyecto en Firebase**
+   - Ve a [Firebase Console](https://console.firebase.google.com/)
+   - Crea un nuevo proyecto: `kanban-jce`
+   - Habilita Firestore Database
+
+2. **Copiar credenciales**
+   - En Project Settings → General
+   - Copia las credenciales de Firebase Config
+
+3. **Crear archivo `.env`**
+   ```bash
+   touch .env
+   ```
+
+4. **Agregar credenciales al `.env`**
+   ```env
+   VITE_FIREBASE_API_KEY=tu_api_key_aqui
+   VITE_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=tu_proyecto_id
+   VITE_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
+   VITE_FIREBASE_APP_ID=tu_app_id
+   ```
+
+5. **Inicializar Firebase** (opcional)
+   ```bash
+   npm run firebase:init
+   ```
+
+6. **Reiniciar el servidor**
+   ```bash
+   npm run dev
+   ```
+
+### 📚 Documentación Completa
+
+Ver **`FIREBASE_SETUP.md`** para:
+- Guía paso a paso con capturas
+- Configuración de reglas de seguridad
+- Migración de datos existentes
+- Troubleshooting detallado
+- Deploy a producción
+
+### 🔄 Modo Automático
+
+La aplicación funciona automáticamente en dos modos:
+
+**Con Firebase configurado:**
+- 🔥 Sincronización en tiempo real
+- ☁️ Datos en la nube
+- 👥 Multi-usuario
+
+**Sin Firebase configurado:**
+- 💾 Datos en localStorage
+- 🚀 Funciona sin internet
+- 👤 Un usuario por navegador
+
+**¡No necesitas cambiar código!** La app detecta automáticamente qué modo usar.
 
 ---
 
@@ -206,6 +291,8 @@ Al abrir la aplicación por primera vez:
 kanban-jce/
 ├── public/
 │   └── logo-jce.svg           # Logo oficial de la JCE
+├── scripts/
+│   └── init-firebase.js      # 🔥 Script de inicialización Firebase
 ├── src/
 │   ├── components/            # Componentes React
 │   │   ├── Login.jsx         # Pantalla de login
@@ -217,16 +304,26 @@ kanban-jce/
 │   │   ├── TaskDetailModal.jsx # Modal detalle + comentarios
 │   │   ├── ColumnManager.jsx # Gestión de columnas
 │   │   └── SettingsPanel.jsx # Panel de configuración
+│   ├── config/                # 🔥 Configuraciones
+│   │   └── firebase.js       # 🔥 Config de Firebase
 │   ├── context/               # Context API
 │   │   ├── AuthContext.jsx   # Autenticación y usuarios
 │   │   └── KanbanContext.jsx # Estado del Kanban
+│   ├── hooks/                 # 🔥 Custom Hooks
+│   │   └── useFirebaseSync.js # 🔥 Sincronización en tiempo real
+│   ├── services/              # 🔥 Servicios
+│   │   └── firebaseService.js # 🔥 Operaciones CRUD Firebase
 │   ├── utils/                 # Utilidades
-│   │   └── storage.js        # Funciones de LocalStorage
+│   │   └── storage.js        # Funciones de almacenamiento
 │   ├── App.jsx               # Componente principal
 │   ├── App.css               # Estilos globales
 │   └── main.jsx              # Entry point
+├── .env.example              # 🔥 Template de variables de entorno
+├── .gitignore                # Git ignore (incluye .env)
 ├── database-schema.md         # Esquema de base de datos
 ├── migration-guide.md         # Guía de migración a DB
+├── FIREBASE_SETUP.md         # 🔥 Guía completa de Firebase
+├── FIREBASE_INTEGRATION.md   # 🔥 Documentación técnica Firebase
 ├── package.json
 ├── vite.config.js
 └── README.md
@@ -246,9 +343,21 @@ kanban-jce/
 - Cálculo de estadísticas
 
 #### `storage.js`
-- Interfaz con LocalStorage
-- Funciones de persistencia
-- Datos por defecto
+- Interfaz unificada con LocalStorage y Firebase
+- Auto-detección del modo de almacenamiento
+- Fallback automático
+- Todas las funciones son async
+
+#### `firebaseService.js` 🔥
+- Servicios CRUD para Firestore
+- Real-time listeners (onSnapshot)
+- Manejo de errores robusto
+- Conversión de timestamps
+
+#### `useFirebaseSync.js` 🔥
+- Hook personalizado de sincronización
+- Actualizaciones en tiempo real
+- Auto-cleanup al desmontar
 
 ---
 
@@ -299,20 +408,27 @@ Las tarjetas tienen un borde de color según la prioridad.
 
 ---
 
-## Migración a Base de Datos
+## Opciones de Backend
 
-### ¿Por qué migrar?
+### Opción 1: Firebase Firestore 🔥 (Recomendado)
 
-El sistema actual usa **LocalStorage** para persistencia. Esto es ideal para:
-- ✅ Prototipado rápido
-- ✅ Sin necesidad de backend
-- ✅ Sin costos de hosting
+**Ventajas:**
+- ✅ Sin backend propio necesario
+- ✅ Sincronización en tiempo real
+- ✅ Configuración en 5 minutos
+- ✅ Plan gratuito generoso
+- ✅ Escalable automáticamente
+- ✅ SSL y seguridad incluidos
 
-Pero tiene limitaciones:
-- ❌ Datos locales al navegador
-- ❌ Sin colaboración real-time
-- ❌ Límite de 5-10MB
-- ❌ Pérdida de datos si se borra el navegador
+Ver **`FIREBASE_SETUP.md`** para configuración completa.
+
+### Opción 2: PostgreSQL + Backend Personalizado
+
+**Para casos específicos donde necesitas:**
+- Control total sobre el backend
+- Lógica de negocio compleja en servidor
+- Integración con sistemas existentes
+- Cumplimiento de regulaciones específicas
 
 ### Migración a PostgreSQL
 
@@ -498,24 +614,36 @@ chore: tareas de mantenimiento
 
 ## Roadmap
 
+### Versión 2.0 ✅ (ACTUAL)
+- [x] Integración con Firebase Firestore
+- [x] Sincronización en tiempo real
+- [x] Fallback automático a localStorage
+- [x] Documentación completa de Firebase
+
 ### Versión 2.1 (Próxima)
+- [ ] Firebase Authentication (OAuth, Email/Password)
+- [ ] Firebase Storage para adjuntar archivos
+- [ ] Notificaciones push con FCM
+- [ ] Modo offline con Firestore offline persistence
+- [ ] Indicador de usuarios conectados en tiempo real
+
+### Versión 2.2
 - [ ] Subtareas
-- [ ] Adjuntar archivos a tareas
-- [ ] Notificaciones
 - [ ] Filtros avanzados
 - [ ] Exportar a PDF/Excel
+- [ ] Historial de cambios en tareas
+- [ ] Templates de tareas
 
-### Versión 3.0 (Backend)
-- [ ] API REST con Node.js
+### Versión 3.0 (Backend Alternativo)
+- [ ] API REST con Node.js (alternativa a Firebase)
 - [ ] Base de datos PostgreSQL
-- [ ] Autenticación JWT
+- [ ] Autenticación JWT personalizada
 - [ ] WebSockets para real-time
-- [ ] Historial de cambios
 
 ### Versión 4.0 (Avanzado)
 - [ ] Mobile app (React Native)
 - [ ] Integraciones (Slack, Email)
-- [ ] Dashboards avanzados
+- [ ] Dashboards avanzados con Analytics
 - [ ] Reportes automáticos
 - [ ] IA para estimación de horas
 
@@ -524,13 +652,16 @@ chore: tareas de mantenimiento
 ## FAQ
 
 ### ¿Los datos son compartidos entre usuarios?
-No, actualmente cada usuario tiene sus datos en su propio navegador (LocalStorage). Para compartir datos, necesitas migrar a una base de datos.
+**Con Firebase:** Sí, todos los usuarios ven y editan los mismos datos en tiempo real.
+**Sin Firebase:** No, cada navegador tiene sus propios datos en localStorage.
 
 ### ¿Se pierden los datos al cerrar el navegador?
-No, LocalStorage persiste los datos incluso después de cerrar el navegador. Solo se pierden si limpias el caché o cambias de navegador.
+**Con Firebase:** No, los datos están en la nube y son accesibles desde cualquier dispositivo.
+**Sin Firebase:** No, localStorage persiste incluso después de cerrar el navegador.
 
 ### ¿Puedo usar esto en producción?
-Sí, pero solo para uso individual o equipos pequeños en la misma computadora. Para equipos distribuidos, migra a la versión con backend.
+**Con Firebase:** Sí, totalmente listo para producción. Soporta equipos distribuidos globalmente.
+**Sin Firebase:** Sí, pero solo para uso individual por navegador.
 
 ### ¿Cómo cambio los colores del tema?
 Edita las variables CSS en `src/App.css`:
@@ -544,6 +675,15 @@ Edita las variables CSS en `src/App.css`:
 
 ### ¿Puedo agregar más columnas?
 Sí, usa el panel de "Columnas" en el sidebar para crear, editar o eliminar columnas.
+
+### ¿Firebase es gratis?
+Sí, el plan gratuito (Spark) incluye:
+- 1GB de almacenamiento
+- 50,000 lecturas/día
+- 20,000 escrituras/día
+- 20,000 deletes/día
+
+Esto es suficiente para equipos pequeños/medianos. Ver [Firebase Pricing](https://firebase.google.com/pricing) para más detalles.
 
 ---
 

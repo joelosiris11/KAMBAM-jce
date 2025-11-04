@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   getTasks,
   saveTasks,
@@ -13,6 +13,7 @@ import {
   updateColumn as updateColumnInStorage,
   deleteColumn as deleteColumnFromStorage
 } from '../utils/storage';
+import { useFirebaseSync } from '../hooks/useFirebaseSync';
 
 const KanbanContext = createContext(null);
 
@@ -29,47 +30,63 @@ export const KanbanProvider = ({ children }) => {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Callbacks memoizados para evitar reconexiones innecesarias
+  const handleTasksUpdate = useCallback((updatedTasks) => {
+    setTasks(updatedTasks);
+  }, []);
+
+  const handleColumnsUpdate = useCallback((updatedColumns) => {
+    setColumns(updatedColumns);
+  }, []);
+
+  // Sincronización en tiempo real con Firebase
+  useFirebaseSync(handleTasksUpdate, handleColumnsUpdate);
+
   // Cargar datos iniciales
   useEffect(() => {
     loadData();
   }, []);
 
-  const loadData = () => {
+  const loadData = async () => {
     setLoading(true);
-    const loadedTasks = getTasks();
-    const loadedColumns = getColumns();
+    try {
+      const loadedTasks = await getTasks();
+      const loadedColumns = await getColumns();
     setTasks(loadedTasks);
     setColumns(loadedColumns);
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+    }
     setLoading(false);
   };
 
   // ============= TAREAS =============
-  const addTask = (taskData) => {
-    const newTask = addTaskToStorage(taskData);
+  const addTask = async (taskData) => {
+    const newTask = await addTaskToStorage(taskData);
     setTasks([...tasks, newTask]);
     return newTask;
   };
 
-  const updateTask = (taskId, updates) => {
-    const updatedTask = updateTaskInStorage(taskId, updates);
+  const updateTask = async (taskId, updates) => {
+    const updatedTask = await updateTaskInStorage(taskId, updates);
     if (updatedTask) {
       // Recargar todas las tareas para asegurar sincronización
-      const refreshedTasks = getTasks();
+      const refreshedTasks = await getTasks();
       setTasks(refreshedTasks);
     }
     return updatedTask;
   };
 
-  const deleteTask = (taskId) => {
-    deleteTaskFromStorage(taskId);
+  const deleteTask = async (taskId) => {
+    await deleteTaskFromStorage(taskId);
     setTasks(tasks.filter(t => t.id !== taskId));
   };
 
-  const moveTask = (taskId, newStatus) => {
-    const updatedTask = updateTaskInStorage(taskId, { status: newStatus });
+  const moveTask = async (taskId, newStatus) => {
+    const updatedTask = await updateTaskInStorage(taskId, { status: newStatus });
     if (updatedTask) {
       // Recargar todas las tareas para reflejar el cambio inmediatamente
-      const refreshedTasks = getTasks();
+      const refreshedTasks = await getTasks();
       setTasks(refreshedTasks);
       return updatedTask;
     }
@@ -77,44 +94,44 @@ export const KanbanProvider = ({ children }) => {
   };
 
   // ============= COMENTARIOS =============
-  const addComment = (taskId, commentText) => {
-    const comment = addCommentToStorage(taskId, commentText);
+  const addComment = async (taskId, commentText) => {
+    const comment = await addCommentToStorage(taskId, commentText);
     if (comment) {
-      const updatedTasks = getTasks();
+      const updatedTasks = await getTasks();
       setTasks(updatedTasks);
     }
     return comment;
   };
 
-  const deleteComment = (taskId, commentId) => {
-    const success = deleteCommentFromStorage(taskId, commentId);
+  const deleteComment = async (taskId, commentId) => {
+    const success = await deleteCommentFromStorage(taskId, commentId);
     if (success) {
-      const updatedTasks = getTasks();
+      const updatedTasks = await getTasks();
       setTasks(updatedTasks);
     }
     return success;
   };
 
   // ============= COLUMNAS =============
-  const addColumn = (columnData) => {
-    const newColumn = addColumnToStorage(columnData);
+  const addColumn = async (columnData) => {
+    const newColumn = await addColumnToStorage(columnData);
     setColumns([...columns, newColumn]);
     return newColumn;
   };
 
-  const updateColumn = (columnId, updates) => {
-    const updatedColumn = updateColumnInStorage(columnId, updates);
+  const updateColumn = async (columnId, updates) => {
+    const updatedColumn = await updateColumnInStorage(columnId, updates);
     if (updatedColumn) {
       setColumns(columns.map(c => c.id === columnId ? updatedColumn : c));
     }
     return updatedColumn;
   };
 
-  const deleteColumn = (columnId) => {
-    deleteColumnFromStorage(columnId);
+  const deleteColumn = async (columnId) => {
+    await deleteColumnFromStorage(columnId);
     setColumns(columns.filter(c => c.id !== columnId));
     // Recargar tareas ya que algunas pueden haber sido movidas
-    const updatedTasks = getTasks();
+    const updatedTasks = await getTasks();
     setTasks(updatedTasks);
   };
 
