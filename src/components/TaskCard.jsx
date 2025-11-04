@@ -1,8 +1,8 @@
 import { Draggable } from '@hello-pangea/dnd';
-import { Clock, Calendar, MessageCircle, X, Code, FlaskConical, Palette, TestTube, Book, Users, Bug, Circle, UserCheck } from 'lucide-react';
+import { Clock, Calendar, MessageCircle, X, Edit, Code, FlaskConical, Palette, TestTube, Book, Users, Bug, Circle, UserCheck } from 'lucide-react';
 import './TaskCard.css';
 
-const TaskCard = ({ task, index, onClick, onDelete }) => {
+const TaskCard = ({ task, index, onClick, onDelete, onEdit }) => {
   const date = new Date(task.createdAt).toLocaleDateString('es-ES', {
     day: '2-digit',
     month: 'short',
@@ -46,6 +46,14 @@ const TaskCard = ({ task, index, onClick, onDelete }) => {
     e.stopPropagation();
     e.preventDefault();
     onDelete(task.id);
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (onEdit) {
+      onEdit(task);
+    }
   };
 
   return (
@@ -111,8 +119,8 @@ const TaskCard = ({ task, index, onClick, onDelete }) => {
             )}
           </div>
 
-          <div className="task-card-footer" onClick={handleCardClick}>
-            <div className="task-card-meta">
+          <div className="task-card-footer">
+            <div className="task-card-meta" onClick={handleCardClick}>
               <div className="task-card-meta-item">
                 <Clock size={12} />
                 <span>{task.hours}h</span>
@@ -127,6 +135,24 @@ const TaskCard = ({ task, index, onClick, onDelete }) => {
                   <span>{commentCount}</span>
                 </div>
               )}
+            </div>
+            <div className="task-card-actions">
+              {onEdit && (
+                <button 
+                  className="task-action-btn task-edit-btn"
+                  onClick={handleEdit}
+                  title="Editar tarea"
+                >
+                  <Edit size={14} />
+                </button>
+              )}
+              <button 
+                className="task-action-btn task-delete-btn"
+                onClick={handleDelete}
+                title="Eliminar tarea"
+              >
+                <X size={14} />
+              </button>
             </div>
           </div>
         </div>

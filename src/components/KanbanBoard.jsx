@@ -3,12 +3,14 @@ import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { useKanban } from '../context/KanbanContext';
 import TaskCard from './TaskCard';
 import TaskDetailModal from './TaskDetailModal';
+import TaskModal from './TaskModal';
 import { FileText, ListTodo, PlayCircle, Eye, CheckCircle, Search } from 'lucide-react';
 import './KanbanBoard.css';
 
 const KanbanBoard = () => {
   const { columns, moveTask, deleteTask, getTasksByColumn } = useKanban();
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [searchQueries, setSearchQueries] = useState({});
   const [typeFilters, setTypeFilters] = useState({});
@@ -54,6 +56,16 @@ const KanbanBoard = () => {
         setSelectedTask(null);
       }
     }
+  };
+
+  const handleEditTask = (task) => {
+    setSelectedTask(task);
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedTask(null);
   };
 
   const getColumnIcon = (columnId) => {
@@ -177,6 +189,7 @@ const KanbanBoard = () => {
                               index={index}
                               onClick={() => handleTaskClick(task)}
                               onDelete={handleDeleteTask}
+                              onEdit={handleEditTask}
                             />
                           ))
                         )}
@@ -197,6 +210,13 @@ const KanbanBoard = () => {
             setShowDetailModal(false);
             setSelectedTask(null);
           }}
+        />
+      )}
+
+      {showEditModal && selectedTask && (
+        <TaskModal
+          editTask={selectedTask}
+          onClose={handleCloseEditModal}
         />
       )}
     </div>

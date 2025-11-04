@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useKanban } from '../context/KanbanContext';
-import { ChevronUp, ChevronDown } from 'lucide-react';
 import './Modal.css';
 import './ColumnManager.css';
 
@@ -51,24 +50,15 @@ const ColumnManager = ({ onClose }) => {
     updateColumn(columnId, { color });
   };
 
-  const handleMoveColumn = (columnId, direction) => {
-    const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
-    const currentIndex = sortedColumns.findIndex(col => col.id === columnId);
+  const handleUpdateOrder = async (columnId, newOrder) => {
+    const orderNum = parseInt(newOrder);
+    if (isNaN(orderNum) || orderNum < 0) return;
     
-    if (direction === 'up' && currentIndex > 0) {
-      // Intercambiar posición con la columna anterior
-      const targetColumn = sortedColumns[currentIndex - 1];
-      updateColumn(columnId, { order: targetColumn.order });
-      updateColumn(targetColumn.id, { order: sortedColumns[currentIndex].order });
-    } else if (direction === 'down' && currentIndex < sortedColumns.length - 1) {
-      // Intercambiar posición con la columna siguiente
-      const targetColumn = sortedColumns[currentIndex + 1];
-      updateColumn(columnId, { order: targetColumn.order });
-      updateColumn(targetColumn.id, { order: sortedColumns[currentIndex].order });
-    }
+    console.log(`🔢 Actualizando orden de ${columnId} a ${orderNum}`);
+    await updateColumn(columnId, { order: orderNum });
   };
 
-  const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+  const sortedColumns = [...columns].sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -84,23 +74,16 @@ const ColumnManager = ({ onClose }) => {
           <div className="columns-list">
             {sortedColumns.map((column, index) => (
               <div key={column.id} className="column-item">
-                <div className="column-reorder-buttons">
-                  <button
-                    className="btn-icon btn-reorder"
-                    onClick={() => handleMoveColumn(column.id, 'up')}
-                    disabled={index === 0}
-                    title="Mover arriba"
-                  >
-                    <ChevronUp size={18} />
-                  </button>
-                  <button
-                    className="btn-icon btn-reorder"
-                    onClick={() => handleMoveColumn(column.id, 'down')}
-                    disabled={index === sortedColumns.length - 1}
-                    title="Mover abajo"
-                  >
-                    <ChevronDown size={18} />
-                  </button>
+                <div className="column-order-input">
+                  <label className="order-label">Orden</label>
+                  <input
+                    type="number"
+                    className="order-input"
+                    value={column.order !== undefined ? column.order : index}
+                    onChange={(e) => handleUpdateOrder(column.id, e.target.value)}
+                    min="0"
+                    title="Orden de la columna"
+                  />
                 </div>
                 <div className="column-item-info">
                   <div 

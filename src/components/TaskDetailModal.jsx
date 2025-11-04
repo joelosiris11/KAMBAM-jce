@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useKanban } from '../context/KanbanContext';
 import { useAuth } from '../context/AuthContext';
-import { X, Clock, User, Calendar, MessageCircle, Trash2, UserCheck } from 'lucide-react';
+import { X, Clock, User, Calendar, MessageCircle, Trash2, UserCheck, Edit } from 'lucide-react';
+import TaskModal from './TaskModal';
 import './Modal.css';
 import './TaskDetailModal.css';
 
@@ -9,6 +10,7 @@ const TaskDetailModal = ({ task: initialTask, onClose }) => {
   const { tasks, updateTask, deleteTask, addComment, deleteComment } = useKanban();
   const { currentUser } = useAuth();
   const [commentText, setCommentText] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false);
   
   // Obtener la tarea actualizada del contexto
   const task = tasks.find(t => t.id === initialTask.id) || initialTask;
@@ -32,6 +34,14 @@ const TaskDetailModal = ({ task: initialTask, onClose }) => {
       deleteTask(task.id);
       onClose();
     }
+  };
+
+  const handleEdit = () => {
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
   };
 
   const getPriorityText = (priority) => {
@@ -215,11 +225,25 @@ const TaskDetailModal = ({ task: initialTask, onClose }) => {
             <Trash2 size={16} />
             Eliminar Tarea
           </button>
-          <button className="btn btn-secondary" onClick={onClose}>
-            Cerrar
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn btn-primary" onClick={handleEdit}>
+              <Edit size={16} />
+              Editar Tarea
+            </button>
+            <button className="btn btn-secondary" onClick={onClose}>
+              Cerrar
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Modal de edición */}
+      {showEditModal && (
+        <TaskModal
+          editTask={task}
+          onClose={handleCloseEditModal}
+        />
+      )}
     </div>
   );
 };

@@ -450,3 +450,4 @@ Ver archivo: `migration-guide.md`
 ### Migración de Datos
 Ver el archivo `migration-guide.md` para instrucciones detalladas sobre cómo migrar los datos existentes desde LocalStorage a la base de datos.
 
+

@@ -959,3 +959,4 @@ WHERE created_by NOT IN (SELECT username FROM users);
 
 **¡Buena suerte con tu migración!** 🚀
 
+

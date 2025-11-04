@@ -587,3 +587,4 @@ Para preguntas sobre la arquitectura:
 **Última actualización**: Noviembre 2024
 **Versión del documento**: 1.0
 
+
