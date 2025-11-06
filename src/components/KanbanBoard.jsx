@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { useKanban } from '../context/KanbanContext';
+import { useAuth } from '../context/AuthContext';
 import TaskCard from './TaskCard';
 import TaskDetailModal from './TaskDetailModal';
 import TaskModal from './TaskModal';
@@ -8,7 +9,9 @@ import { FileText, ListTodo, PlayCircle, Eye, CheckCircle, Search } from 'lucide
 import './KanbanBoard.css';
 
 const KanbanBoard = () => {
-  const { columns, moveTask, deleteTask, getTasksByColumn } = useKanban();
+  const { currentUser } = useAuth();
+  const { columns, moveTask, deleteTask, getTasksByColumn, updateTask } = useKanban();
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'project-manager';
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -49,6 +52,12 @@ const KanbanBoard = () => {
   };
 
   const handleDeleteTask = (taskId) => {
+    // Solo admin puede eliminar tareas
+    if (!isAdmin) {
+      alert('Solo los administradores pueden eliminar tareas');
+      return;
+    }
+    
     if (window.confirm('¿Estás seguro de eliminar esta tarea?')) {
       deleteTask(taskId);
       if (selectedTask && selectedTask.id === taskId) {
@@ -56,6 +65,11 @@ const KanbanBoard = () => {
         setSelectedTask(null);
       }
     }
+  };
+
+  const handleResetHours = async (taskId) => {
+    if (!isAdmin) return;
+    await updateTask(taskId, { hours: 0 });
   };
 
   const handleEditTask = (task) => {
@@ -192,6 +206,8 @@ const KanbanBoard = () => {
                               onClick={() => handleTaskClick(task)}
                               onDelete={handleDeleteTask}
                               onEdit={handleEditTask}
+                              isAdmin={isAdmin}
+                              onResetHours={handleResetHours}
                             />
                           ))
                         )}

@@ -1,8 +1,8 @@
 import { Draggable } from '@hello-pangea/dnd';
-import { Clock, Calendar, MessageCircle, X, Edit, Code, FlaskConical, Palette, TestTube, Book, Users, Bug, Circle, UserCheck } from 'lucide-react';
+import { Clock, Calendar, MessageCircle, X, Edit, Code, FlaskConical, Palette, TestTube, Book, Users, Bug, Circle, UserCheck, RotateCcw } from 'lucide-react';
 import './TaskCard.css';
 
-const TaskCard = ({ task, index, onClick, onDelete, onEdit }) => {
+const TaskCard = ({ task, index, onClick, onDelete, onEdit, isAdmin, onResetHours }) => {
   const date = new Date(task.createdAt).toLocaleDateString('es-ES', {
     day: '2-digit',
     month: 'short',
@@ -56,6 +56,14 @@ const TaskCard = ({ task, index, onClick, onDelete, onEdit }) => {
     }
   };
 
+  const handleResetHours = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (onResetHours && isAdmin) {
+      onResetHours(task.id);
+    }
+  };
+
   return (
     <Draggable draggableId={String(task.id)} index={index}>
       {(provided, snapshot) => (
@@ -67,6 +75,17 @@ const TaskCard = ({ task, index, onClick, onDelete, onEdit }) => {
           data-priority={task.priority}
           style={provided.draggableProps.style}
         >
+          {isAdmin && (
+            <div className="task-card-admin-actions">
+              <button
+                className="task-admin-btn task-reset-hours-btn"
+                onClick={handleResetHours}
+                title="Resetear horas a 0"
+              >
+                <RotateCcw size={12} />
+              </button>
+            </div>
+          )}
           <div className="task-card-header" onClick={handleCardClick}>
             <h4 className="task-card-title">{task.title}</h4>
             <div className="task-badges">
@@ -146,13 +165,15 @@ const TaskCard = ({ task, index, onClick, onDelete, onEdit }) => {
                   <Edit size={14} />
                 </button>
               )}
-              <button 
-                className="task-action-btn task-delete-btn"
-                onClick={handleDelete}
-                title="Eliminar tarea"
-              >
-                <X size={14} />
-              </button>
+              {isAdmin && (
+                <button 
+                  className="task-action-btn task-delete-btn"
+                  onClick={handleDelete}
+                  title="Eliminar tarea"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
           </div>
         </div>

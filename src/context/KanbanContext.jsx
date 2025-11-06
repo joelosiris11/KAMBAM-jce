@@ -137,11 +137,13 @@ export const KanbanProvider = ({ children }) => {
 
   // ============= ESTADÍSTICAS =============
   const getStats = () => {
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(t => t.status === 'completed').length;
-    const inProgressTasks = tasks.filter(t => t.status === 'in-progress').length;
-    const totalHours = tasks.reduce((sum, task) => sum + (task.hours || 0), 0);
-    const remainingHours = tasks
+    // Excluir tareas del backlog de las estadísticas
+    const activeTasks = tasks.filter(t => t.status !== 'backlog');
+    const totalTasks = activeTasks.length;
+    const completedTasks = activeTasks.filter(t => t.status === 'completed').length;
+    const inProgressTasks = activeTasks.filter(t => t.status === 'in-progress').length;
+    const totalHours = activeTasks.reduce((sum, task) => sum + (task.hours || 0), 0);
+    const remainingHours = activeTasks
       .filter(t => t.status !== 'completed')
       .reduce((sum, task) => sum + (task.hours || 0), 0);
     const progressPercent = totalTasks > 0 

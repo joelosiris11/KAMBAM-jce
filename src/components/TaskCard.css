@@ -11,6 +11,44 @@
   user-select: none;
 }
 
+/* Admin Actions - Botón encima de la tarea */
+.task-card-admin-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+  display: flex;
+  gap: 4px;
+}
+
+.task-admin-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0.7;
+  box-shadow: var(--shadow-sm);
+}
+
+.task-admin-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  background: var(--warning);
+  color: white;
+}
+
+.task-reset-hours-btn:hover {
+  background: var(--warning);
+  color: white;
+}
+
 .task-card:active {
   cursor: grabbing;
 }

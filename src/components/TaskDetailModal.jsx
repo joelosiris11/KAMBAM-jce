@@ -12,6 +12,8 @@ const TaskDetailModal = ({ task: initialTask, onClose }) => {
   const [commentText, setCommentText] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'project-manager';
+  
   // Obtener la tarea actualizada del contexto
   const task = tasks.find(t => t.id === initialTask.id) || initialTask;
 
@@ -30,6 +32,12 @@ const TaskDetailModal = ({ task: initialTask, onClose }) => {
   };
 
   const handleDelete = () => {
+    // Solo admin puede eliminar tareas
+    if (!isAdmin) {
+      alert('Solo los administradores pueden eliminar tareas');
+      return;
+    }
+    
     if (window.confirm('¿Estás seguro de eliminar esta tarea?')) {
       deleteTask(task.id);
       onClose();
@@ -221,10 +229,12 @@ const TaskDetailModal = ({ task: initialTask, onClose }) => {
         </div>
 
         <div className="modal-footer">
-          <button className="btn btn-danger" onClick={handleDelete}>
-            <Trash2 size={16} />
-            Eliminar Tarea
-          </button>
+          {isAdmin && (
+            <button className="btn btn-danger" onClick={handleDelete}>
+              <Trash2 size={16} />
+              Eliminar Tarea
+            </button>
+          )}
           <div style={{ display: 'flex', gap: '10px' }}>
             <button className="btn btn-primary" onClick={handleEdit}>
               <Edit size={16} />
