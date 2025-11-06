@@ -332,6 +332,53 @@ export const initializeDefaultData = async () => {
   }
 };
 
+// ============= CONFIGURACIONES COMPARTIDAS =============
+export const firebaseSettings = {
+  // Obtener configuración
+  get: async () => {
+    if (!db) throw new Error('Firebase no configurado');
+    const settingsDocRef = doc(db, 'settings', 'app');
+    const settingsDoc = await getDoc(settingsDocRef);
+    
+    if (!settingsDoc.exists()) {
+      // Crear configuración por defecto
+      const defaultSettings = {
+        filesUrl: 'https://drive.google.com/drive/folders/1kKKySnLWk8qLNDFGVEFT13GEVXWgndMZ?usp=sharing',
+        gitUrl: 'https://github.com/joelosiris11/jceFacturacion',
+        updatedAt: serverTimestamp()
+      };
+      await setDoc(settingsDocRef, defaultSettings);
+      return defaultSettings;
+    }
+    
+    return settingsDoc.data();
+  },
+
+  // Actualizar configuración
+  update: async (updates) => {
+    if (!db) throw new Error('Firebase no configurado');
+    const settingsDocRef = doc(db, 'settings', 'app');
+    await updateDoc(settingsDocRef, {
+      ...updates,
+      updatedAt: serverTimestamp()
+    });
+    
+    const updatedDoc = await getDoc(settingsDocRef);
+    return updatedDoc.data();
+  },
+
+  // Escuchar cambios en tiempo real
+  onSnapshot: (callback) => {
+    if (!db) throw new Error('Firebase no configurado');
+    const settingsDocRef = doc(db, 'settings', 'app');
+    return onSnapshot(settingsDocRef, (doc) => {
+      if (doc.exists()) {
+        callback(doc.data());
+      }
+    });
+  }
+};
+
 // Verificar si Firebase está disponible
 export const isFirebaseAvailable = () => {
   return isFirebaseConfigured() && db !== null;

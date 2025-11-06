@@ -88,7 +88,9 @@ const KanbanBoard = () => {
     if (searchQuery) {
       filtered = filtered.filter(task => 
         task.title.toLowerCase().includes(searchQuery) ||
-        task.description?.toLowerCase().includes(searchQuery)
+        task.description?.toLowerCase().includes(searchQuery) ||
+        task.createdBy?.toLowerCase().includes(searchQuery) ||
+        task.assignedTo?.toLowerCase().includes(searchQuery)
       );
     }
     

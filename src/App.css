@@ -168,6 +168,100 @@ body {
   font-size: 20px;
 }
 
+/* Botones editables en sidebar */
+.sidebar-nav-item-editable {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.sidebar-nav-item-editable > .sidebar-nav-item {
+  flex: 1;
+  position: relative;
+}
+
+.sidebar-nav-edit-icon {
+  padding: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+.sidebar-nav-item-editable:hover .sidebar-nav-edit-icon {
+  opacity: 1;
+}
+
+.sidebar-nav-edit-icon:hover {
+  background: var(--bg-tertiary);
+  color: var(--primary);
+}
+
+.sidebar-nav-edit-mode {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+}
+
+.sidebar-nav-url-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  transition: all 0.2s;
+}
+
+.sidebar-nav-url-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.sidebar-nav-edit-btn {
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-nav-edit-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-dark);
+}
+
+.sidebar-nav-edit-btn:first-of-type:hover {
+  background: var(--success);
+  color: white;
+  border-color: var(--success);
+}
+
+.sidebar-nav-edit-btn:last-of-type:hover {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
 /* Burndown Chart en Sidebar */
 .sidebar-chart {
   padding: 12px;
