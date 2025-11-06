@@ -72,6 +72,18 @@ const KanbanBoard = () => {
     await updateTask(taskId, { hours: 0 });
   };
 
+  const handleToggleValidated = async (taskId, validated) => {
+    const updates = { validated };
+    if (validated) {
+      // Guardar el nombre del validador cuando se valida
+      updates.validatedBy = currentUser?.username || null;
+    } else {
+      // Limpiar el validador cuando se desvalida
+      updates.validatedBy = null;
+    }
+    await updateTask(taskId, updates);
+  };
+
   const handleEditTask = (task) => {
     setSelectedTask(task);
     setShowEditModal(true);
@@ -208,6 +220,7 @@ const KanbanBoard = () => {
                               onEdit={handleEditTask}
                               isAdmin={isAdmin}
                               onResetHours={handleResetHours}
+                              onToggleValidated={handleToggleValidated}
                             />
                           ))
                         )}

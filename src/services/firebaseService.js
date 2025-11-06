@@ -215,6 +215,7 @@ export const firebaseTasks = {
       ...taskData,
       id: taskData.id || Date.now(),
       comments: [],
+      validated: taskData.validated ?? false,
       createdAt: serverTimestamp()
     };
 

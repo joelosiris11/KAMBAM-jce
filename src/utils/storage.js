@@ -35,6 +35,7 @@ export const addTask = async (taskData) => {
     id: Date.now(),
     ...taskData,
     comments: [],
+    validated: taskData.validated ?? false,
     createdAt: taskData.createdAt || new Date().toISOString()
   };
   

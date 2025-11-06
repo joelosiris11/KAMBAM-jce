@@ -362,6 +362,60 @@
   font-size: 14px;
 }
 
+/* Toggle Validada/No Validada */
+.task-validated-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  max-width: 100%;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.task-validated-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
+}
+
+.task-validated-toggle.validated {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.task-validated-toggle.not-validated {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: var(--text-tertiary);
+  color: var(--text-tertiary);
+}
+
+.task-validated-toggle.validated:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.task-validated-toggle.not-validated:hover {
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.task-validated-label {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
 @media (max-width: 768px) {
   .task-card-actions {
     opacity: 1;

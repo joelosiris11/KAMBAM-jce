@@ -1,8 +1,8 @@
 import { Draggable } from '@hello-pangea/dnd';
-import { Clock, Calendar, MessageCircle, X, Edit, Code, FlaskConical, Palette, TestTube, Book, Users, Bug, Circle, UserCheck, RotateCcw } from 'lucide-react';
+import { Clock, Calendar, MessageCircle, X, Edit, Code, FlaskConical, Palette, TestTube, Book, Users, Bug, Circle, UserCheck, RotateCcw, CheckCircle2 } from 'lucide-react';
 import './TaskCard.css';
 
-const TaskCard = ({ task, index, onClick, onDelete, onEdit, isAdmin, onResetHours }) => {
+const TaskCard = ({ task, index, onClick, onDelete, onEdit, isAdmin, onResetHours, onToggleValidated }) => {
   const date = new Date(task.createdAt).toLocaleDateString('es-ES', {
     day: '2-digit',
     month: 'short',
@@ -61,6 +61,14 @@ const TaskCard = ({ task, index, onClick, onDelete, onEdit, isAdmin, onResetHour
     e.preventDefault();
     if (onResetHours && isAdmin) {
       onResetHours(task.id);
+    }
+  };
+
+  const handleToggleValidated = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (onToggleValidated) {
+      onToggleValidated(task.id, !(task.validated ?? false));
     }
   };
 
@@ -154,6 +162,22 @@ const TaskCard = ({ task, index, onClick, onDelete, onEdit, isAdmin, onResetHour
                   <span>{commentCount}</span>
                 </div>
               )}
+              <button
+                className={`task-validated-toggle ${(task.validated ?? false) ? 'validated' : 'not-validated'}`}
+                onClick={handleToggleValidated}
+                title={(task.validated ?? false) ? 'Validada' : 'No validada'}
+              >
+                {(task.validated ?? false) ? (
+                  <CheckCircle2 size={14} />
+                ) : (
+                  <Circle size={14} />
+                )}
+                <span className="task-validated-label">
+                  {(task.validated ?? false) 
+                    ? `Validada${task.validatedBy ? ` por ${task.validatedBy}` : ''}` 
+                    : 'No validada'}
+                </span>
+              </button>
             </div>
             <div className="task-card-actions">
               {onEdit && (
