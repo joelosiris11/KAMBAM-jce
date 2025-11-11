@@ -9,7 +9,7 @@ import TaskModal from './components/TaskModal';
 import ColumnManager from './components/ColumnManager';
 import SettingsPanel from './components/SettingsPanel';
 import BurndownChart from './components/BurndownChart';
-import { LayoutDashboard, Columns, Settings, LogOut, Plus, Folder, Github, Pencil, Check, X } from 'lucide-react';
+import { LayoutDashboard, Columns, Settings, LogOut, Plus, Folder, Github, Pencil, Check, X, Briefcase } from 'lucide-react';
 import { firebaseSettings, isFirebaseAvailable } from './services/firebaseService';
 import './App.css';
 
@@ -24,11 +24,14 @@ function App() {
   // URLs editables (compartidas en Firebase o localStorage)
   const [filesUrl, setFilesUrl] = useState('https://drive.google.com/drive/folders/1kKKySnLWk8qLNDFGVEFT13GEVXWgndMZ?usp=sharing');
   const [gitUrl, setGitUrl] = useState('https://github.com/joelosiris11/jceFacturacion');
+  const [projectUrl, setProjectUrl] = useState('');
   
   const [editingFilesUrl, setEditingFilesUrl] = useState(false);
   const [editingGitUrl, setEditingGitUrl] = useState(false);
+  const [editingProjectUrl, setEditingProjectUrl] = useState(false);
   const [tempFilesUrl, setTempFilesUrl] = useState(filesUrl);
   const [tempGitUrl, setTempGitUrl] = useState(gitUrl);
+  const [tempProjectUrl, setTempProjectUrl] = useState(projectUrl);
   
   // Cargar URLs desde Firebase o localStorage
   useEffect(() => {
@@ -40,26 +43,32 @@ function App() {
           const settings = await firebaseSettings.get();
           if (settings.filesUrl) setFilesUrl(settings.filesUrl);
           if (settings.gitUrl) setGitUrl(settings.gitUrl);
+          if (settings.projectUrl) setProjectUrl(settings.projectUrl);
           
           // Escuchar cambios en tiempo real
           unsubscribe = firebaseSettings.onSnapshot((settings) => {
             if (settings.filesUrl) setFilesUrl(settings.filesUrl);
             if (settings.gitUrl) setGitUrl(settings.gitUrl);
+            if (settings.projectUrl) setProjectUrl(settings.projectUrl);
           });
         } catch (error) {
           console.error('Error al cargar configuraciones desde Firebase:', error);
           // Fallback a localStorage
           const savedFiles = localStorage.getItem('kanban_files_url');
           const savedGit = localStorage.getItem('kanban_git_url');
+          const savedProject = localStorage.getItem('kanban_project_url');
           if (savedFiles) setFilesUrl(savedFiles);
           if (savedGit) setGitUrl(savedGit);
+          if (savedProject) setProjectUrl(savedProject);
         }
       } else {
         // Usar localStorage si Firebase no está disponible
         const savedFiles = localStorage.getItem('kanban_files_url');
         const savedGit = localStorage.getItem('kanban_git_url');
+        const savedProject = localStorage.getItem('kanban_project_url');
         if (savedFiles) setFilesUrl(savedFiles);
         if (savedGit) setGitUrl(savedGit);
+        if (savedProject) setProjectUrl(savedProject);
       }
     };
     
@@ -127,6 +136,39 @@ function App() {
   const handleCancelGitUrl = () => {
     setTempGitUrl(gitUrl);
     setEditingGitUrl(false);
+  };
+  
+  const handleSaveProjectUrl = async () => {
+    setProjectUrl(tempProjectUrl);
+    setEditingProjectUrl(false);
+    
+    // Guardar inmediatamente
+    if (isFirebaseAvailable()) {
+      try {
+        await firebaseSettings.update({ projectUrl: tempProjectUrl });
+      } catch (error) {
+        console.error('Error al guardar URL en Firebase:', error);
+        localStorage.setItem('kanban_project_url', tempProjectUrl);
+      }
+    } else {
+      localStorage.setItem('kanban_project_url', tempProjectUrl);
+    }
+  };
+  
+  const handleCancelProjectUrl = () => {
+    setTempProjectUrl(projectUrl);
+    setEditingProjectUrl(false);
+  };
+
+  // Función helper para normalizar URLs (agregar protocolo si falta)
+  const normalizeUrl = (url) => {
+    if (!url) return '';
+    // Si ya tiene protocolo, devolverla tal cual
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // Si no tiene protocolo, agregar https://
+    return `https://${url}`;
   };
 
   // Mostrar pantalla de login
@@ -224,7 +266,7 @@ function App() {
               <>
                 <button 
                   className="sidebar-nav-item" 
-                  onClick={() => window.open(filesUrl, '_blank')}
+                  onClick={() => window.open(normalizeUrl(filesUrl), '_blank')}
                 >
                   <Folder size={20} />
                   <span>Archivos</span>
@@ -280,7 +322,7 @@ function App() {
               <>
                 <button 
                   className="sidebar-nav-item" 
-                  onClick={() => window.open(gitUrl, '_blank')}
+                  onClick={() => window.open(normalizeUrl(gitUrl), '_blank')}
                 >
                   <Github size={20} />
                   <span>Git</span>
@@ -291,6 +333,63 @@ function App() {
                     e.stopPropagation();
                     setTempGitUrl(gitUrl);
                     setEditingGitUrl(true);
+                  }}
+                  title="Editar URL"
+                >
+                  <Pencil size={14} />
+                </button>
+              </>
+            )}
+          </div>
+          <div className="sidebar-nav-item-editable">
+            {editingProjectUrl ? (
+              <div className="sidebar-nav-edit-mode">
+                <input
+                  type="text"
+                  className="sidebar-nav-url-input"
+                  value={tempProjectUrl}
+                  onChange={(e) => setTempProjectUrl(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveProjectUrl();
+                    } else if (e.key === 'Escape') {
+                      handleCancelProjectUrl();
+                    }
+                  }}
+                  autoFocus
+                />
+                <button
+                  className="sidebar-nav-edit-btn"
+                  onClick={handleSaveProjectUrl}
+                  title="Guardar"
+                >
+                  <Check size={14} />
+                </button>
+                <button
+                  className="sidebar-nav-edit-btn"
+                  onClick={handleCancelProjectUrl}
+                  title="Cancelar"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <button 
+                  className="sidebar-nav-item" 
+                  onClick={() => projectUrl && window.open(normalizeUrl(projectUrl), '_blank')}
+                  disabled={!projectUrl}
+                >
+                  <Briefcase size={20} />
+                  <span>Proyecto</span>
+                </button>
+                <button
+                  className="sidebar-nav-edit-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setTempProjectUrl(projectUrl);
+                    setEditingProjectUrl(true);
                   }}
                   title="Editar URL"
                 >

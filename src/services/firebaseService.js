@@ -346,6 +346,7 @@ export const firebaseSettings = {
       const defaultSettings = {
         filesUrl: 'https://drive.google.com/drive/folders/1kKKySnLWk8qLNDFGVEFT13GEVXWgndMZ?usp=sharing',
         gitUrl: 'https://github.com/joelosiris11/jceFacturacion',
+        projectUrl: '',
         updatedAt: serverTimestamp()
       };
       await setDoc(settingsDocRef, defaultSettings);
