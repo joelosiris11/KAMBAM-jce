@@ -154,14 +154,75 @@ body {
   width: 100%;
 }
 
+.sidebar-nav-item svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .sidebar-nav-item:hover {
   background: var(--bg-tertiary);
   color: var(--text-primary);
 }
 
 .sidebar-nav-item.active {
-  background: var(--primary);
-  color: white;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.sidebar-nav-item.disabled,
+.sidebar-nav-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.sidebar-nav-item.disabled:hover,
+.sidebar-nav-item:disabled:hover {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.sidebar-nav-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: stretch;
+}
+
+/* Si solo hay un hijo, que ocupe solo una columna */
+.sidebar-nav-group > :only-child {
+  grid-column: 1 / -1;
+}
+
+/* Si hay dos hijos, cada uno en su columna */
+.sidebar-nav-group > :nth-child(1):not(:only-child) {
+  grid-column: 1;
+}
+
+.sidebar-nav-group > :nth-child(2):not(:only-child) {
+  grid-column: 2;
+}
+
+.sidebar-nav-group .sidebar-nav-item {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.sidebar-nav-group .sidebar-nav-item svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar-nav-item span:first-child {
@@ -172,14 +233,22 @@ body {
 .sidebar-nav-item-editable {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 4px;
   width: 100%;
+  min-height: 40px;
+}
+
+.sidebar-nav-group .sidebar-nav-item-editable {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
 }
 
 .sidebar-nav-item-editable > .sidebar-nav-item {
   flex: 1;
   position: relative;
+  margin: 0;
 }
 
 .sidebar-nav-edit-icon {
@@ -199,6 +268,11 @@ body {
 
 .sidebar-nav-item-editable:hover .sidebar-nav-edit-icon {
   opacity: 1;
+}
+
+.sidebar-nav-item-editable:hover > .sidebar-nav-item {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .sidebar-nav-edit-icon:hover {

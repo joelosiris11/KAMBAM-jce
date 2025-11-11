@@ -9,7 +9,9 @@ import TaskModal from './components/TaskModal';
 import ColumnManager from './components/ColumnManager';
 import SettingsPanel from './components/SettingsPanel';
 import BurndownChart from './components/BurndownChart';
-import { LayoutDashboard, Columns, Settings, LogOut, Plus, Folder, Github, Pencil, Check, X, Briefcase } from 'lucide-react';
+import CompetitivenessPanel from './components/CompetitivenessPanel';
+import UrlEditModal from './components/UrlEditModal';
+import { LayoutDashboard, Columns, Settings, LogOut, Plus, Folder, Github, Pencil, Check, X, Briefcase, Users } from 'lucide-react';
 import { firebaseSettings, isFirebaseAvailable } from './services/firebaseService';
 import './App.css';
 
@@ -19,6 +21,7 @@ function App() {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showColumnManager, setShowColumnManager] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showCompetitivenessPanel, setShowCompetitivenessPanel] = useState(false);
   const [loginError, setLoginError] = useState('');
   
   // URLs editables (compartidas en Firebase o localStorage)
@@ -26,12 +29,7 @@ function App() {
   const [gitUrl, setGitUrl] = useState('https://github.com/joelosiris11/jceFacturacion');
   const [projectUrl, setProjectUrl] = useState('');
   
-  const [editingFilesUrl, setEditingFilesUrl] = useState(false);
-  const [editingGitUrl, setEditingGitUrl] = useState(false);
-  const [editingProjectUrl, setEditingProjectUrl] = useState(false);
-  const [tempFilesUrl, setTempFilesUrl] = useState(filesUrl);
-  const [tempGitUrl, setTempGitUrl] = useState(gitUrl);
-  const [tempProjectUrl, setTempProjectUrl] = useState(projectUrl);
+  const [editingUrl, setEditingUrl] = useState(null); // 'files', 'git', 'project'
   
   // Cargar URLs desde Firebase o localStorage
   useEffect(() => {
@@ -94,70 +92,46 @@ function App() {
     await updateUserRole(role);
   };
   
-  const handleSaveFilesUrl = async () => {
-    setFilesUrl(tempFilesUrl);
-    setEditingFilesUrl(false);
+  const handleSaveUrl = async (urlType, url) => {
+    const normalizedUrl = normalizeUrl(url);
     
-    // Guardar inmediatamente
-    if (isFirebaseAvailable()) {
-      try {
-        await firebaseSettings.update({ filesUrl: tempFilesUrl });
-      } catch (error) {
-        console.error('Error al guardar URL en Firebase:', error);
-        localStorage.setItem('kanban_files_url', tempFilesUrl);
+    if (urlType === 'files') {
+      setFilesUrl(normalizedUrl);
+      if (isFirebaseAvailable()) {
+        try {
+          await firebaseSettings.update({ filesUrl: normalizedUrl });
+        } catch (error) {
+          console.error('Error al guardar URL en Firebase:', error);
+          localStorage.setItem('kanban_files_url', normalizedUrl);
+        }
+      } else {
+        localStorage.setItem('kanban_files_url', normalizedUrl);
       }
-    } else {
-      localStorage.setItem('kanban_files_url', tempFilesUrl);
-    }
-  };
-  
-  const handleCancelFilesUrl = () => {
-    setTempFilesUrl(filesUrl);
-    setEditingFilesUrl(false);
-  };
-  
-  const handleSaveGitUrl = async () => {
-    setGitUrl(tempGitUrl);
-    setEditingGitUrl(false);
-    
-    // Guardar inmediatamente
-    if (isFirebaseAvailable()) {
-      try {
-        await firebaseSettings.update({ gitUrl: tempGitUrl });
-      } catch (error) {
-        console.error('Error al guardar URL en Firebase:', error);
-        localStorage.setItem('kanban_git_url', tempGitUrl);
+    } else if (urlType === 'git') {
+      setGitUrl(normalizedUrl);
+      if (isFirebaseAvailable()) {
+        try {
+          await firebaseSettings.update({ gitUrl: normalizedUrl });
+        } catch (error) {
+          console.error('Error al guardar URL en Firebase:', error);
+          localStorage.setItem('kanban_git_url', normalizedUrl);
+        }
+      } else {
+        localStorage.setItem('kanban_git_url', normalizedUrl);
       }
-    } else {
-      localStorage.setItem('kanban_git_url', tempGitUrl);
-    }
-  };
-  
-  const handleCancelGitUrl = () => {
-    setTempGitUrl(gitUrl);
-    setEditingGitUrl(false);
-  };
-  
-  const handleSaveProjectUrl = async () => {
-    setProjectUrl(tempProjectUrl);
-    setEditingProjectUrl(false);
-    
-    // Guardar inmediatamente
-    if (isFirebaseAvailable()) {
-      try {
-        await firebaseSettings.update({ projectUrl: tempProjectUrl });
-      } catch (error) {
-        console.error('Error al guardar URL en Firebase:', error);
-        localStorage.setItem('kanban_project_url', tempProjectUrl);
+    } else if (urlType === 'project') {
+      setProjectUrl(normalizedUrl);
+      if (isFirebaseAvailable()) {
+        try {
+          await firebaseSettings.update({ projectUrl: normalizedUrl });
+        } catch (error) {
+          console.error('Error al guardar URL en Firebase:', error);
+          localStorage.setItem('kanban_project_url', normalizedUrl);
+        }
+      } else {
+        localStorage.setItem('kanban_project_url', normalizedUrl);
       }
-    } else {
-      localStorage.setItem('kanban_project_url', tempProjectUrl);
     }
-  };
-  
-  const handleCancelProjectUrl = () => {
-    setTempProjectUrl(projectUrl);
-    setEditingProjectUrl(false);
   };
 
   // Función helper para normalizar URLs (agregar protocolo si falta)
@@ -209,194 +183,92 @@ function App() {
         </div>
         
         <nav className="sidebar-nav">
-          <button className="sidebar-nav-item active">
-            <LayoutDashboard size={20} />
-            <span>Tablero</span>
-          </button>
-          <button 
-            className="sidebar-nav-item" 
-            onClick={() => setShowColumnManager(true)}
-          >
-            <Columns size={20} />
-            <span>Columnas</span>
-          </button>
-          {currentUser?.role === 'admin' && (
+          <div className="sidebar-nav-group">
+            <button 
+              className="sidebar-nav-item"
+              onClick={() => setShowCompetitivenessPanel(true)}
+            >
+              <Users size={20} />
+              <span>Equipo de Trabajo</span>
+            </button>
             <button 
               className="sidebar-nav-item" 
-              onClick={() => setShowSettings(true)}
+              onClick={() => setShowColumnManager(true)}
+            >
+              <Columns size={20} />
+              <span>Columnas</span>
+            </button>
+          </div>
+          <div className="sidebar-nav-group">
+            <button 
+              className={`sidebar-nav-item ${currentUser?.role !== 'admin' ? 'disabled' : ''}`}
+              onClick={() => currentUser?.role === 'admin' && setShowSettings(true)}
+              disabled={currentUser?.role !== 'admin'}
+              title={currentUser?.role !== 'admin' ? 'Solo disponible para administradores' : 'Config'}
             >
               <Settings size={20} />
-              <span>Configuración</span>
+              <span>Config</span>
             </button>
-          )}
-          <div className="sidebar-nav-item-editable">
-            {editingFilesUrl ? (
-              <div className="sidebar-nav-edit-mode">
-                <input
-                  type="text"
-                  className="sidebar-nav-url-input"
-                  value={tempFilesUrl}
-                  onChange={(e) => setTempFilesUrl(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSaveFilesUrl();
-                    } else if (e.key === 'Escape') {
-                      handleCancelFilesUrl();
-                    }
-                  }}
-                  autoFocus
-                />
-                <button
-                  className="sidebar-nav-edit-btn"
-                  onClick={handleSaveFilesUrl}
-                  title="Guardar"
-                >
-                  <Check size={14} />
-                </button>
-                <button
-                  className="sidebar-nav-edit-btn"
-                  onClick={handleCancelFilesUrl}
-                  title="Cancelar"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <>
-                <button 
-                  className="sidebar-nav-item" 
-                  onClick={() => window.open(normalizeUrl(filesUrl), '_blank')}
-                >
-                  <Folder size={20} />
-                  <span>Archivos</span>
-                </button>
-                <button
-                  className="sidebar-nav-edit-icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTempFilesUrl(filesUrl);
-                    setEditingFilesUrl(true);
-                  }}
-                  title="Editar URL"
-                >
-                  <Pencil size={14} />
-                </button>
-              </>
-            )}
+            <div className="sidebar-nav-item-editable">
+              <button 
+                className="sidebar-nav-item" 
+                onClick={() => window.open(normalizeUrl(filesUrl), '_blank')}
+              >
+                <Folder size={20} />
+                <span>Archivos</span>
+              </button>
+              <button
+                className="sidebar-nav-edit-icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingUrl('files');
+                }}
+                title="Editar URL"
+              >
+                <Pencil size={14} />
+              </button>
+            </div>
           </div>
-          <div className="sidebar-nav-item-editable">
-            {editingGitUrl ? (
-              <div className="sidebar-nav-edit-mode">
-                <input
-                  type="text"
-                  className="sidebar-nav-url-input"
-                  value={tempGitUrl}
-                  onChange={(e) => setTempGitUrl(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSaveGitUrl();
-                    } else if (e.key === 'Escape') {
-                      handleCancelGitUrl();
-                    }
-                  }}
-                  autoFocus
-                />
-                <button
-                  className="sidebar-nav-edit-btn"
-                  onClick={handleSaveGitUrl}
-                  title="Guardar"
-                >
-                  <Check size={14} />
-                </button>
-                <button
-                  className="sidebar-nav-edit-btn"
-                  onClick={handleCancelGitUrl}
-                  title="Cancelar"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <>
-                <button 
-                  className="sidebar-nav-item" 
-                  onClick={() => window.open(normalizeUrl(gitUrl), '_blank')}
-                >
-                  <Github size={20} />
-                  <span>Git</span>
-                </button>
-                <button
-                  className="sidebar-nav-edit-icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTempGitUrl(gitUrl);
-                    setEditingGitUrl(true);
-                  }}
-                  title="Editar URL"
-                >
-                  <Pencil size={14} />
-                </button>
-              </>
-            )}
-          </div>
-          <div className="sidebar-nav-item-editable">
-            {editingProjectUrl ? (
-              <div className="sidebar-nav-edit-mode">
-                <input
-                  type="text"
-                  className="sidebar-nav-url-input"
-                  value={tempProjectUrl}
-                  onChange={(e) => setTempProjectUrl(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSaveProjectUrl();
-                    } else if (e.key === 'Escape') {
-                      handleCancelProjectUrl();
-                    }
-                  }}
-                  autoFocus
-                />
-                <button
-                  className="sidebar-nav-edit-btn"
-                  onClick={handleSaveProjectUrl}
-                  title="Guardar"
-                >
-                  <Check size={14} />
-                </button>
-                <button
-                  className="sidebar-nav-edit-btn"
-                  onClick={handleCancelProjectUrl}
-                  title="Cancelar"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <>
-                <button 
-                  className="sidebar-nav-item" 
-                  onClick={() => projectUrl && window.open(normalizeUrl(projectUrl), '_blank')}
-                  disabled={!projectUrl}
-                >
-                  <Briefcase size={20} />
-                  <span>Proyecto</span>
-                </button>
-                <button
-                  className="sidebar-nav-edit-icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTempProjectUrl(projectUrl);
-                    setEditingProjectUrl(true);
-                  }}
-                  title="Editar URL"
-                >
-                  <Pencil size={14} />
-                </button>
-              </>
-            )}
+          <div className="sidebar-nav-group">
+            <div className="sidebar-nav-item-editable">
+              <button 
+                className="sidebar-nav-item" 
+                onClick={() => window.open(normalizeUrl(gitUrl), '_blank')}
+              >
+                <Github size={20} />
+                <span>Git</span>
+              </button>
+              <button
+                className="sidebar-nav-edit-icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingUrl('git');
+                }}
+                title="Editar URL"
+              >
+                <Pencil size={14} />
+              </button>
+            </div>
+            <div className="sidebar-nav-item-editable">
+              <button 
+                className="sidebar-nav-item" 
+                onClick={() => projectUrl && window.open(normalizeUrl(projectUrl), '_blank')}
+                disabled={!projectUrl}
+              >
+                <Briefcase size={20} />
+                <span>Proyecto</span>
+              </button>
+              <button
+                className="sidebar-nav-edit-icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingUrl('project');
+                }}
+                title="Editar URL"
+              >
+                <Pencil size={14} />
+              </button>
+            </div>
           </div>
         </nav>
 
@@ -442,6 +314,42 @@ function App() {
 
         {showSettings && (
           <SettingsPanel onClose={() => setShowSettings(false)} />
+        )}
+
+        {showCompetitivenessPanel && (
+          <CompetitivenessPanel onClose={() => setShowCompetitivenessPanel(false)} />
+        )}
+
+        {/* Modales para editar URLs */}
+        {editingUrl === 'files' && (
+          <UrlEditModal
+            isOpen={true}
+            onClose={() => setEditingUrl(null)}
+            title="Editar URL de Archivos"
+            currentUrl={filesUrl}
+            onSave={(url) => handleSaveUrl('files', url)}
+            icon={Folder}
+          />
+        )}
+        {editingUrl === 'git' && (
+          <UrlEditModal
+            isOpen={true}
+            onClose={() => setEditingUrl(null)}
+            title="Editar URL de Git"
+            currentUrl={gitUrl}
+            onSave={(url) => handleSaveUrl('git', url)}
+            icon={Github}
+          />
+        )}
+        {editingUrl === 'project' && (
+          <UrlEditModal
+            isOpen={true}
+            onClose={() => setEditingUrl(null)}
+            title="Editar URL de Proyecto"
+            currentUrl={projectUrl}
+            onSave={(url) => handleSaveUrl('project', url)}
+            icon={Briefcase}
+          />
         )}
       </main>
     </div>
