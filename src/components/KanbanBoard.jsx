@@ -126,6 +126,37 @@ const KanbanBoard = () => {
       filtered = filtered.filter(task => task.type === typeFilter);
     }
     
+    // Ordenar por fecha (más recientes arriba)
+    filtered.sort((a, b) => {
+      // Manejar diferentes formatos de fecha (timestamp, Firebase Timestamp, etc.)
+      const getTimestamp = (task) => {
+        if (!task.createdAt) return 0;
+        // Si es un objeto Firebase Timestamp
+        if (task.createdAt.toMillis) {
+          return task.createdAt.toMillis();
+        }
+        // Si es un objeto con seconds y nanoseconds
+        if (task.createdAt.seconds) {
+          return task.createdAt.seconds * 1000 + (task.createdAt.nanoseconds || 0) / 1000000;
+        }
+        // Si es un número (timestamp en milisegundos)
+        if (typeof task.createdAt === 'number') {
+          return task.createdAt;
+        }
+        // Si es un string, intentar parsearlo
+        if (typeof task.createdAt === 'string') {
+          return new Date(task.createdAt).getTime();
+        }
+        return 0;
+      };
+      
+      const timestampA = getTimestamp(a);
+      const timestampB = getTimestamp(b);
+      
+      // Orden descendente (más recientes primero)
+      return timestampB - timestampA;
+    });
+    
     return filtered;
   };
 
